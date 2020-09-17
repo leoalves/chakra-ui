@@ -30,7 +30,8 @@ test("CircularProgress renders correctly", () => {
 
 test("Progress: has the proper aria, data, and role attributes", () => {
   const utils = render(<Progress color="green" size="sm" value={20} />)
-  const progress = utils.getByRole("progressbar")
+
+  let progress = utils.getByRole("progressbar")
 
   expect(progress).not.toHaveAttribute("data-indeterminate")
   expect(progress).toHaveAttribute("aria-valuemax", "100")
@@ -39,7 +40,9 @@ test("Progress: has the proper aria, data, and role attributes", () => {
   expect(progress).not.toHaveAttribute("aria-valuetext")
 
   // rerender as indeterminate
-  utils.rerender(<Progress color="green" size="sm" value={undefined} />)
+  utils.rerender(<Progress color="green" size="sm" isIndeterminate />)
+
+  progress = utils.getByRole("progressbar")
 
   expect(progress).toHaveAttribute("data-indeterminate")
   expect(progress).not.toHaveAttribute("aria-valuenow")
@@ -53,7 +56,8 @@ test("CircularProgress: has the proper aria, data, and role attributes", () => {
     value: 20,
   }
   const utils = render(<CircularProgress {...props} />)
-  const progress = utils.getByRole("progressbar")
+
+  let progress = utils.getByRole("progressbar")
 
   expect(progress).not.toHaveAttribute("data-indeterminate")
   expect(progress).toHaveAttribute("aria-valuemax", "100")
@@ -62,7 +66,9 @@ test("CircularProgress: has the proper aria, data, and role attributes", () => {
   expect(progress).toHaveAttribute("aria-valuetext", "value")
 
   // rerender as indeterminate
-  utils.rerender(<CircularProgress {...props} value={undefined} />)
+  utils.rerender(<CircularProgress {...props} isIndeterminate />)
+
+  progress = utils.getByRole("progressbar")
 
   expect(progress).toHaveAttribute("data-indeterminate")
   expect(progress).not.toHaveAttribute("aria-valuenow")
@@ -74,6 +80,8 @@ test("CircularProgress: has the proper aria, data, and role attributes", () => {
       getValueText={(value, percent) => `${value} (${percent}%)`}
     />,
   )
+
+  progress = utils.getByRole("progressbar")
 
   expect(progress).toHaveAttribute("aria-valuetext", "20 (20%)")
 })

@@ -1,49 +1,47 @@
 import { FormControlOptions, useFormControl } from "@chakra-ui/form-control"
 import {
   chakra,
+  forwardRef,
   layoutPropNames,
   omitThemingProps,
   PropsOf,
-  useMultiStyleConfig,
   ThemingProps,
+  useMultiStyleConfig,
 } from "@chakra-ui/system"
-import { cx, split, __DEV__ } from "@chakra-ui/utils"
+import { cx, merge, split, __DEV__ } from "@chakra-ui/utils"
 import * as React from "react"
 
 type Omitted = "disabled" | "required" | "readOnly" | "size"
 
-export type SelectFieldProps = Omit<PropsOf<typeof chakra.select>, Omitted> & {
+export interface SelectFieldProps
+  extends Omit<PropsOf<typeof chakra.select>, Omitted> {
   size?: string
   isDisabled?: boolean
 }
 
-export const SelectField = React.forwardRef(function SelectField(
-  props: SelectFieldProps,
-  ref: React.Ref<any>,
-) {
-  const { children, placeholder, className, isDisabled, ...rest } = props
-  const select = useFormControl<HTMLSelectElement>(rest)
+export const SelectField = forwardRef<SelectFieldProps, "select">(
+  function SelectField(props, ref) {
+    const { children, placeholder, className, ...rest } = props
+    const ownProps = useFormControl<HTMLSelectElement>(rest)
 
-  return (
-    <chakra.select
-      {...select}
-      {...(rest as any)}
-      ref={ref}
-      paddingRight="2rem"
-      className={cx("chakra-select", className)}
-      disabled={isDisabled}
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {children}
-    </chakra.select>
-  )
-})
+    return (
+      <chakra.select
+        {...ownProps}
+        ref={ref}
+        className={cx("chakra-select", className)}
+      >
+        {placeholder && <option value="">{placeholder}</option>}
+        {children}
+      </chakra.select>
+    )
+  },
+)
 
 if (__DEV__) {
   SelectField.displayName = "SelectField"
 }
 
-type RootProps = Omit<PropsOf<typeof chakra.div>, "color">
+interface RootProps extends Omit<PropsOf<typeof chakra.div>, "color"> {}
 
 interface SelectOptions extends FormControlOptions {
   /**
@@ -71,35 +69,54 @@ interface SelectOptions extends FormControlOptions {
    * ```
    */
   placeholder?: string
+  /**
+   * The size (width and height) of the icon
+   */
+  iconSize?: string
+  /**
+   * The color of the icon
+   */
+  iconColor?: string
 }
 
-export type SelectProps = SelectFieldProps &
-  ThemingProps &
-  SelectOptions & {
-    /**
-     * Props to forward to the root `div` element
-     */
-    rootProps?: RootProps
-    /**
-     * The icon element to use in the select
-     */
-    icon?: React.ReactElement<any>
-  }
+export interface SelectProps
+  extends SelectFieldProps,
+    ThemingProps,
+    SelectOptions {
+  /**
+   * Props to forward to the root `div` element
+   */
+  rootProps?: RootProps
+  /**
+   * The icon element to use in the select
+   */
+  icon?: React.ReactElement<any>
+}
 
 /**
  * React component used to select one item from a list of options.
  */
-export const Select = React.forwardRef(function Select(
-  props: SelectProps,
-  ref: React.Ref<any>,
+export const Select = forwardRef<SelectProps, "select">(function Select(
+  props,
+  ref,
 ) {
   const styles = useMultiStyleConfig("Select", props)
 
-  const { rootProps, placeholder, icon, color, ...rest } = omitThemingProps(
-    props,
-  )
+  const {
+    rootProps,
+    placeholder,
+    icon,
+    color,
+    height,
+    h,
+    minH,
+    minHeight,
+    iconColor,
+    iconSize,
+    ...rest
+  } = omitThemingProps(props)
 
-  const [layoutProps, otherProps] = split(rest, layoutPropNames as string[])
+  const [layoutProps, otherProps] = split(rest, layoutPropNames as any[])
 
   const rootStyles = {
     width: "100%",
@@ -107,6 +124,11 @@ export const Select = React.forwardRef(function Select(
     position: "relative",
     color,
   }
+
+  const fieldStyles = merge({}, styles.field, {
+    pr: "2rem",
+    _focus: { zIndex: "unset" },
+  })
 
   return (
     <chakra.div
@@ -117,9 +139,11 @@ export const Select = React.forwardRef(function Select(
     >
       <SelectField
         ref={ref}
+        height={h ?? height}
+        minH={minH ?? minHeight}
         placeholder={placeholder}
         {...otherProps}
-        __css={styles.field}
+        __css={fieldStyles}
       >
         {props.children}
       </SelectField>
@@ -127,8 +151,9 @@ export const Select = React.forwardRef(function Select(
       <SelectIcon
         data-disabled={props.isDisabled}
         children={icon}
-        color={color}
+        color={iconColor || color}
         __css={styles.icon}
+        {...(iconSize && { fontSize: iconSize })}
       />
     </chakra.div>
   )
@@ -138,7 +163,7 @@ if (__DEV__) {
   Select.displayName = "Select"
 }
 
-export const DefaultIcon = (props: PropsOf<"svg">) => (
+export const DefaultIcon: React.FC<PropsOf<"svg">> = (props) => (
   <svg viewBox="0 0 24 24" {...props}>
     <path
       fill="currentColor"
@@ -164,7 +189,7 @@ const IconWrapper = chakra("div", {
 
 type SelectIconProps = PropsOf<typeof IconWrapper>
 
-function SelectIcon(props: SelectIconProps) {
+const SelectIcon: React.FC<SelectIconProps> = (props) => {
   const { children = <DefaultIcon />, ...rest } = props
 
   const clone = React.cloneElement(children as any, {
@@ -184,7 +209,7 @@ function SelectIcon(props: SelectIconProps) {
     <IconWrapper
       {...rest}
       className="chakra-select__icon-wrapper"
-      children={clone}
+      children={React.isValidElement(children) ? clone : null}
     />
   )
 }

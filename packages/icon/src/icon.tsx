@@ -1,4 +1,4 @@
-import { chakra, PropsOf } from "@chakra-ui/system"
+import { chakra, forwardRef, PropsOf } from "@chakra-ui/system"
 import { cx, __DEV__ } from "@chakra-ui/utils"
 import * as React from "react"
 
@@ -21,45 +21,50 @@ const fallbackIcon = {
   viewBox: "0 0 24 24",
 }
 
-export type IconProps = PropsOf<typeof chakra.svg>
+export interface IconProps extends Partial<PropsOf<typeof chakra.svg>> {}
 
-export const Icon = React.forwardRef(function Icon(
-  props: IconProps,
-  ref: React.Ref<any>,
-) {
+export const Icon = forwardRef<IconProps, "svg">(function Icon(props, ref) {
   const {
     as: element,
-    boxSize = "1em",
     viewBox,
     color = "currentColor",
     focusable = false,
     children,
     className,
+    __css,
     ...rest
   } = props
 
   const _className = cx("chakra-icon", className)
 
-  const shared: IconProps = {
-    ref,
+  const styles = {
+    w: "1em",
+    h: "1em",
     display: "inline-block",
     lineHeight: "1em",
-    color,
-    focusable,
     flexShrink: 0,
-    boxSize,
-    className: _className,
+    color,
+    ...__css,
   }
 
+  const shared: IconProps = {
+    ref,
+    focusable,
+    className: _className,
+    __css: styles,
+  }
+
+  const _viewBox = viewBox ?? fallbackIcon.viewBox
+
   /**
-   * If you're using an icon library like `react-icons`
+   * If you're using an icon library like `react-icons`.
+   * Note: anyone passing the `as` prop, should manage the `viewBox` from the external component
    */
   if (element && typeof element !== "string") {
     return <chakra.svg as={element} {...shared} {...rest} />
   }
 
   const _path = (children ?? fallbackIcon.path) as React.ReactNode
-  const _viewBox = viewBox ?? fallbackIcon.viewBox
 
   return (
     <chakra.svg verticalAlign="middle" viewBox={_viewBox} {...shared} {...rest}>

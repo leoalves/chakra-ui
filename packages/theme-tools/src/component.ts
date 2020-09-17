@@ -1,7 +1,7 @@
 import { SystemStyleObject } from "@chakra-ui/system"
 import { Dict, runIfFn } from "@chakra-ui/utils"
 
-interface GlobalStyleProps {
+export interface GlobalStyleProps {
   colorScheme: string
   colorMode: "light" | "dark"
   theme: Dict
@@ -20,7 +20,7 @@ export { runIfFn }
 export type Styles = GlobalStyles & JSXElementStyles
 
 export function mode(light: any, dark: any) {
-  return (props: Dict) => (props.colorMode === "light" ? light : dark)
+  return (props: Dict) => (props.colorMode === "dark" ? dark : light)
 }
 
 export function orient(options: {

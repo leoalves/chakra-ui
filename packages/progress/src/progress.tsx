@@ -1,14 +1,14 @@
 import {
   chakra,
+  ObjectInterpolation,
   omitThemingProps,
   PropsOf,
+  StylesProvider,
   ThemingProps,
   useMultiStyleConfig,
-  StylesProvider,
   useStyles,
-  ObjectInterpolation,
 } from "@chakra-ui/system"
-import { isUndefined, __DEV__ } from "@chakra-ui/utils"
+import { __DEV__ } from "@chakra-ui/utils"
 import * as React from "react"
 import {
   getProgressProps,
@@ -17,11 +17,13 @@ import {
   stripe,
 } from "./progress.utils"
 
+export interface ProgressLabelProps extends PropsOf<typeof chakra.div> {}
+
 /**
  * ProgressLabel is used to show the numeric value of the progress.
  * @see Docs https://chakra-ui.com/components/progress
  */
-export const ProgressLabel = (props: PropsOf<typeof chakra.div>) => {
+export const ProgressLabel: React.FC<ProgressLabelProps> = (props) => {
   const styles = useStyles()
   const labelStyles = {
     top: "50%",
@@ -39,10 +41,9 @@ if (__DEV__) {
   ProgressLabel.displayName = "ProgressLabel"
 }
 
-export type ProgressLabelProps = PropsOf<typeof ProgressLabel>
-
-export type ProgressFilledTrackProps = PropsOf<typeof chakra.div> &
-  GetProgressPropsOptions
+export interface ProgressFilledTrackProps
+  extends PropsOf<typeof chakra.div>,
+    GetProgressPropsOptions {}
 
 /**
  * ProgressFilledTrack (Linear)
@@ -52,9 +53,9 @@ export type ProgressFilledTrackProps = PropsOf<typeof chakra.div> &
  *
  * @see Docs https://chakra-ui.com/components/progress
  */
-function ProgressFilledTrack(props: ProgressFilledTrackProps) {
-  const { min, max, value, ...rest } = props
-  const progress = getProgressProps({ value, min, max })
+const ProgressFilledTrack: React.FC<ProgressFilledTrackProps> = (props) => {
+  const { min, max, value, isIndeterminate, ...rest } = props
+  const progress = getProgressProps({ value, min, max, isIndeterminate })
 
   const styles = useStyles()
   const trackStyles = {
@@ -65,7 +66,7 @@ function ProgressFilledTrack(props: ProgressFilledTrackProps) {
   return (
     <chakra.div
       style={{
-        width: progress.percent != null ? `${progress.percent}%` : undefined,
+        width: `${progress.percent}%`,
         ...rest.style,
       }}
       {...progress.bind}
@@ -75,7 +76,7 @@ function ProgressFilledTrack(props: ProgressFilledTrackProps) {
   )
 }
 
-export type ProgressTrackProps = PropsOf<typeof chakra.div>
+export interface ProgressTrackProps extends PropsOf<typeof chakra.div> {}
 
 interface ProgressOptions {
   /**
@@ -99,11 +100,17 @@ interface ProgressOptions {
    * If `true`, and hasStripe is `true`, the stripes will be animated
    */
   isAnimated?: boolean
+  /**
+   * If `true`, the progress will be indeterminate and the `value`
+   * prop will be ignored
+   */
+  isIndeterminate?: boolean
 }
 
-export type ProgressProps = ProgressOptions &
-  ThemingProps &
-  PropsOf<typeof chakra.div>
+export interface ProgressProps
+  extends ProgressOptions,
+    ThemingProps,
+    PropsOf<typeof chakra.div> {}
 
 /**
  * Progress (Linear)
@@ -116,7 +123,7 @@ export type ProgressProps = ProgressOptions &
  *
  * @see Docs https://chakra-ui.com/components/progress
  */
-export function Progress(props: ProgressProps) {
+export const Progress: React.FC<ProgressProps> = (props) => {
   const {
     value,
     min = 0,
@@ -125,15 +132,11 @@ export function Progress(props: ProgressProps) {
     isAnimated,
     children,
     borderRadius,
+    isIndeterminate,
     ...rest
   } = omitThemingProps(props)
 
-  const styles = useMultiStyleConfig("Progress", {
-    ...props,
-    isIndeterminate: isUndefined(value),
-  })
-
-  const isIndeterminate = isUndefined(value)
+  const styles = useMultiStyleConfig("Progress", props)
 
   const stripAnimation = { animation: `${stripe} 1s linear infinite` }
 
@@ -170,6 +173,7 @@ export function Progress(props: ProgressProps) {
           min={min}
           max={max}
           value={value}
+          isIndeterminate={isIndeterminate}
           css={css}
           borderRadius={borderRadius}
         />

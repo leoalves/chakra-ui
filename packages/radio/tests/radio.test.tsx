@@ -1,11 +1,6 @@
 import * as React from "react"
 import { render, fireEvent } from "@chakra-ui/test-utils"
-import { Radio, useRadio, UseRadioProps } from "../src"
-
-test("Radio renders correctly", () => {
-  const { asFragment } = render(<Radio size="lg" colorScheme="blue" />)
-  expect(asFragment()).toMatchSnapshot()
-})
+import { useRadio, UseRadioProps } from "../src"
 
 test("has proper aria and data attributes", async () => {
   const Component = (props: UseRadioProps = {}) => {
@@ -19,8 +14,9 @@ test("has proper aria and data attributes", async () => {
     )
   }
   const utils = render(<Component name="name" value="" id="id" />)
-  const input = utils.getByTestId("input")
-  const checkbox = utils.getByTestId("checkbox")
+
+  let input = utils.getByTestId("input")
+  let checkbox = utils.getByTestId("checkbox")
 
   expect(input).toHaveAttribute("name", "name")
   expect(input).toHaveAttribute("id", "id")
@@ -39,6 +35,9 @@ test("has proper aria and data attributes", async () => {
   // render with various flags enabled
   utils.rerender(<Component isDisabled isInvalid isReadOnly isRequired />)
 
+  input = utils.getByTestId("input")
+  checkbox = utils.getByTestId("checkbox")
+
   expect(input).toHaveAttribute("aria-required")
   expect(input).toHaveAttribute("aria-invalid")
   expect(input).toHaveAttribute("aria-disabled")
@@ -47,6 +46,9 @@ test("has proper aria and data attributes", async () => {
 
   // input is not truly disabled if focusable
   utils.rerender(<Component isDisabled isFocusable />)
+
+  input = utils.getByTestId("input")
+
   expect(input).not.toBeDisabled()
 })
 

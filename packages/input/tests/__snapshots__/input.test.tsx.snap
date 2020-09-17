@@ -45,14 +45,13 @@ exports[`Elements inside input render correctly 1`] = `
   -webkit-transition: all 0.2s;
   transition: all 0.2s;
   font-size: 1rem;
-  padding-left: 1rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
   height: 2.5rem;
   border-radius: 0.25rem;
   border: 1px solid;
   border-color: inherit;
-  background: #FFFFFF;
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
+  background: inherit;
 }
 
 .emotion-1:hover,
@@ -85,8 +84,9 @@ exports[`Elements inside input render correctly 1`] = `
 
 .emotion-1:focus,
 .emotion-1[data-focus] {
-  border-color: #3182CE;
-  box-shadow: 0 0 0 1px #3182CE;
+  z-index: 1;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px #3182ce;
 }
 
 .emotion-1[aria-invalid=true],
@@ -143,7 +143,7 @@ exports[`Elements inside input render correctly 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Input addons render correctly 1`] = `
+exports[`addons render correctly 1`] = `
 <DocumentFragment>
   .emotion-3 {
   width: 100%;
@@ -198,7 +198,7 @@ exports[`Input addons render correctly 1`] = `
   border-radius: 0.25rem;
   border: 1px solid;
   border-color: inherit;
-  background: #FFFFFF;
+  background: inherit;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 0;
@@ -235,8 +235,9 @@ exports[`Input addons render correctly 1`] = `
 
 .emotion-1:focus,
 .emotion-1[data-focus] {
-  border-color: #3182CE;
-  box-shadow: 0 0 0 1px #3182CE;
+  z-index: 1;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px #3182ce;
 }
 
 .emotion-1[aria-invalid=true],
@@ -293,7 +294,7 @@ exports[`Input addons render correctly 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Input renders correctly 1`] = `
+exports[`renders correctly 1`] = `
 <DocumentFragment>
   .emotion-0 {
   width: 100%;
@@ -311,7 +312,7 @@ exports[`Input renders correctly 1`] = `
   border-radius: 0.25rem;
   border: 1px solid;
   border-color: inherit;
-  background: #FFFFFF;
+  background: inherit;
 }
 
 .emotion-0:hover,
@@ -344,8 +345,9 @@ exports[`Input renders correctly 1`] = `
 
 .emotion-0:focus,
 .emotion-0[data-focus] {
-  border-color: #3182CE;
-  box-shadow: 0 0 0 1px #3182CE;
+  z-index: 1;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px #3182ce;
 }
 
 .emotion-0[aria-invalid=true],

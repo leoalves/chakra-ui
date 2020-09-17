@@ -1,18 +1,19 @@
 import { useCounter, UseCounterProps } from "@chakra-ui/counter"
 import { useBoolean } from "@chakra-ui/hooks"
 import {
-  callAllHandlers,
-  Dict,
-  focus,
-  mergeRefs,
-  normalizeEventKey,
-  StringOrNumber,
   ariaAttr,
-  minSafeInteger,
-  maxSafeInteger,
+  callAllHandlers,
+  focus,
   isBrowser,
+  isNull,
+  maxSafeInteger,
+  mergeRefs,
+  minSafeInteger,
+  normalizeEventKey,
+  PropGetter,
+  StringOrNumber,
 } from "@chakra-ui/utils"
-import * as React from "react"
+import { ChangeEvent, KeyboardEvent, useCallback, useRef } from "react"
 import { useSpinner } from "./use-spinner"
 import {
   isFloatingPointNumericCharacter,
@@ -58,6 +59,21 @@ export interface UseNumberInputProps extends UseCounterProps {
    * The `id` to use for the number input field.
    */
   id?: string
+  /**
+   * The pattern used to check the <input> element's value against on form submission.
+   *
+   * @default
+   * "[0-9]*(.[0-9]+)?"
+   */
+  pattern?: React.InputHTMLAttributes<any>["pattern"]
+  /**
+   * Hints at the type of data that might be entered by the user. It also determines
+   * the type of keyboard shown to the user on mobile devices
+   *
+   * @default
+   * "decimal"
+   */
+  inputMode?: React.InputHTMLAttributes<any>["inputMode"]
 }
 
 /**
@@ -83,8 +99,14 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     isDisabled,
     getAriaValueText,
     isInvalid,
-    onChange: onChangeProp,
+    pattern = "[0-9]*(.[0-9]+)?",
+    inputMode = "decimal",
     id,
+    /**
+     * These props are destructured to ensure `htmlProps` resolves to the correct type
+     */
+    onChange: onChangeProp,
+    precision,
     ...htmlProps
   } = props
 
@@ -107,11 +129,11 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
    */
   const [isFocused, setFocused] = useBoolean()
 
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const isInteractive = !(isReadOnly || isDisabled)
 
-  const increment = React.useCallback(
+  const increment = useCallback(
     (step = stepProp) => {
       if (isInteractive) {
         incrementFn(step)
@@ -120,7 +142,7 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [incrementFn, isInteractive, stepProp],
   )
 
-  const decrement = React.useCallback(
+  const decrement = useCallback(
     (step = stepProp) => {
       if (isInteractive) {
         decrementFn(step)
@@ -141,8 +163,8 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
    * The `onChange` handler filters out any character typed
    * that isn't floating point compatible.
    */
-  const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
       const valueString = event.target.value
         .split("")
         .filter(isFloatingPointNumericCharacter)
@@ -152,8 +174,8 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [updateFn],
   )
 
-  const onKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       /**
        * only allow valid numeric keys
        */
@@ -197,7 +219,7 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [updateFn, decrement, increment, max, min, stepProp],
   )
 
-  const getStepFactor = (event: React.KeyboardEvent) => {
+  const getStepFactor = (event: KeyboardEvent) => {
     let ratio = 1
     if (event.metaKey || event.ctrlKey) {
       ratio = 0.1
@@ -215,12 +237,23 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
    * @see https://www.w3.org/TR/wai-aria-practices-1.1/#wai-aria-roles-states-and-properties-18
    * @see https://www.w3.org/TR/wai-aria-1.1/#aria-valuetext
    */
-  const ariaValueText = getAriaValueText?.(counter.value)
+  const _getAriaValueText = () => {
+    const text = getAriaValueText?.(counter.value)
+    if (!isNull(text)) {
+      return text
+    }
+
+    const defaultText = counter.value.toString()
+    // empty string is an invalid ARIA attribute value
+    return !defaultText ? undefined : defaultText
+  }
+
+  const ariaValueText = _getAriaValueText()
 
   /**
    * Function that clamps the input's value on blur
    */
-  const validateAndClamp = React.useCallback(() => {
+  const validateAndClamp = useCallback(() => {
     let next = counter.value as StringOrNumber
 
     if (next === "") return
@@ -239,10 +272,12 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
      * - sanitize the value by using parseFloat and some Regex
      * - used to round value to computed precision or decimal points
      */
-    counter.cast(next)
+    if (counter.value !== next) {
+      counter.cast(next)
+    }
   }, [counter, max, min])
 
-  const onBlur = React.useCallback(() => {
+  const onBlur = useCallback(() => {
     setFocused.off()
 
     if (clampValueOnBlur) {
@@ -250,14 +285,14 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     }
   }, [clampValueOnBlur, setFocused, validateAndClamp])
 
-  const focusInput = React.useCallback(() => {
+  const focusInput = useCallback(() => {
     if (focusInputOnChange && inputRef.current) {
       focus(inputRef.current)
     }
   }, [focusInputOnChange])
 
-  const spinUp = React.useCallback(
-    (event: React.MouseEvent) => {
+  const spinUp = useCallback(
+    (event: any) => {
       event.preventDefault()
       spinner.up()
       focusInput()
@@ -265,8 +300,8 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [focusInput, spinner],
   )
 
-  const spinDown = React.useCallback(
-    (event: React.MouseEvent) => {
+  const spinDown = useCallback(
+    (event: any) => {
       event.preventDefault()
       spinner.down()
       focusInput()
@@ -279,9 +314,10 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
       ? "onTouchStart"
       : "onMouseDown"
 
-  const getIncrementButtonProps = React.useCallback(
-    (props: Dict = {}) => ({
+  const getIncrementButtonProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
       ...props,
+      ref,
       role: "button",
       tabIndex: -1,
       [pointerDown]: callAllHandlers(props[pointerDown], spinUp),
@@ -294,13 +330,14 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [pointerDown, counter.isAtMax, keepWithinRange, spinUp, spinner.stop],
   )
 
-  const getDecrementButtonProps = React.useCallback(
-    (props: Dict = {}) => ({
+  const getDecrementButtonProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
       ...props,
+      ref,
       role: "button",
       tabIndex: -1,
       [pointerDown]: callAllHandlers(props[pointerDown], spinDown),
-      onMouseLeave: callAllHandlers(props.onMouseUp, spinner.stop),
+      onMouseLeave: callAllHandlers(props.onMouseLeave, spinner.stop),
       onMouseUp: callAllHandlers(props.onMouseUp, spinner.stop),
       onTouchEnd: callAllHandlers(props.onTouchEnd, spinner.stop),
       disabled: keepWithinRange && counter.isAtMin,
@@ -309,18 +346,16 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
     [pointerDown, counter.isAtMin, keepWithinRange, spinDown, spinner.stop],
   )
 
-  type InputMode = React.InputHTMLAttributes<any>["inputMode"]
-
-  const getInputProps = React.useCallback(
-    (props: Dict = {}) => ({
+  const getInputProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
       ...props,
       id,
-      ref: mergeRefs(inputRef, props.ref),
+      ref: mergeRefs(inputRef, ref),
       value: counter.value,
       role: "spinbutton",
       type: "text",
-      inputMode: "numeric" as InputMode,
-      pattern: "[0-9]*",
+      inputMode,
+      pattern,
       "aria-valuemin": min,
       "aria-valuemax": max,
       "aria-disabled": isDisabled,
@@ -339,6 +374,8 @@ export function useNumberInput(props: UseNumberInputProps = {}) {
       onBlur: callAllHandlers(props.onBlur, onBlur),
     }),
     [
+      inputMode,
+      pattern,
       ariaValueText,
       counter.isOutOfRange,
       counter.value,

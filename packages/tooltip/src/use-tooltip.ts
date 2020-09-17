@@ -1,7 +1,7 @@
 import { useDisclosure, useEventListener, useId } from "@chakra-ui/hooks"
 import { Placement, usePopper, UsePopperProps } from "@chakra-ui/popper"
-import { callAllHandlers, Dict, mergeRefs } from "@chakra-ui/utils"
-import { Ref, useCallback, useEffect, useRef } from "react"
+import { callAllHandlers, mergeRefs, PropGetter } from "@chakra-ui/utils"
+import { useCallback, useEffect, useRef } from "react"
 
 export interface UseTooltipProps {
   /**
@@ -68,8 +68,8 @@ export function useTooltip(props: UseTooltipProps = {}) {
     closeDelay = 0,
     closeOnClick = true,
     closeOnMouseDown,
-    onOpen,
-    onClose,
+    onOpen: onOpenProp,
+    onClose: onCloseProp,
     placement,
     id,
     isOpen: isOpenProp,
@@ -77,13 +77,14 @@ export function useTooltip(props: UseTooltipProps = {}) {
     arrowSize = 10,
     modifiers,
     isDisabled,
+    ...htmlProps
   } = props
 
-  const { isOpen, onOpen: onOpenProp, onClose: onCloseProp } = useDisclosure({
+  const { isOpen, onOpen, onClose } = useDisclosure({
     isOpen: isOpenProp,
     defaultIsOpen,
-    onOpen,
-    onClose,
+    onOpen: onOpenProp,
+    onClose: onCloseProp,
   })
 
   const popper = usePopper({
@@ -103,16 +104,16 @@ export function useTooltip(props: UseTooltipProps = {}) {
 
   const openWithDelay = useCallback(() => {
     if (!isDisabled) {
-      enterTimeout.current = window.setTimeout(onOpenProp, openDelay)
+      enterTimeout.current = window.setTimeout(onOpen, openDelay)
     }
-  }, [isDisabled, onOpenProp, openDelay])
+  }, [isDisabled, onOpen, openDelay])
 
   const closeWithDelay = useCallback(() => {
     if (enterTimeout.current) {
       clearTimeout(enterTimeout.current)
     }
-    exitTimeout.current = window.setTimeout(onCloseProp, closeDelay)
-  }, [closeDelay, onCloseProp])
+    exitTimeout.current = window.setTimeout(onClose, closeDelay)
+  }, [closeDelay, onClose])
 
   const onClick = useCallback(() => {
     if (closeOnClick) {
@@ -141,8 +142,8 @@ export function useTooltip(props: UseTooltipProps = {}) {
     }
   }, [])
 
-  const getTriggerProps = useCallback(
-    (props: Dict = {}, ref: Ref<any> = null) => ({
+  const getTriggerProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
       ...props,
       ref: mergeRefs(ref, triggerRef),
       onMouseLeave: callAllHandlers(props.onMouseLeave, closeWithDelay),
@@ -164,8 +165,9 @@ export function useTooltip(props: UseTooltipProps = {}) {
     ],
   )
 
-  const getTooltipProps = useCallback(
-    (props: Dict = {}, ref: Ref<any> = null) => ({
+  const getTooltipProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
+      ...htmlProps,
       ...props,
       id: tooltipId,
       role: "tooltip",
@@ -175,11 +177,11 @@ export function useTooltip(props: UseTooltipProps = {}) {
         ...popper.popper.style,
       },
     }),
-    [popper.popper.ref, popper.popper.style, tooltipId],
+    [htmlProps, popper.popper.ref, popper.popper.style, tooltipId],
   )
 
-  const getArrowProps = useCallback(
-    (props: Dict = {}, ref: Ref<any> = null) => ({
+  const getArrowProps: PropGetter = useCallback(
+    (props = {}, ref = null) => ({
       ...props,
       ref: mergeRefs(ref, popper.arrow.ref),
       style: { ...props.style, ...popper.arrow.style },

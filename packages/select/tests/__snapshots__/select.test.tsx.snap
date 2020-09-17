@@ -23,12 +23,12 @@ exports[`Select renders correctly 1`] = `
   line-height: normal;
   font-size: 1rem;
   padding-left: 1rem;
+  padding-right: 2rem;
   height: 2.5rem;
   border-radius: 0.25rem;
   border: 1px solid;
   border-color: inherit;
-  background: #FFFFFF;
-  padding-right: 2rem;
+  background: inherit;
 }
 
 .emotion-0 > option {
@@ -65,8 +65,9 @@ exports[`Select renders correctly 1`] = `
 
 .emotion-0:focus,
 .emotion-0[data-focus] {
-  border-color: #3182CE;
-  box-shadow: 0 0 0 1px #3182CE;
+  z-index: unset;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 1px #3182ce;
 }
 
 .emotion-0[aria-invalid=true],
@@ -76,7 +77,6 @@ exports[`Select renders correctly 1`] = `
 }
 
 .emotion-1 {
-  color: currentColor;
   font-size: 1.25rem;
   position: absolute;
   display: -webkit-inline-box;

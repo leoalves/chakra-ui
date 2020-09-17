@@ -1,11 +1,17 @@
 export * from "@chakra-ui/color-mode"
 export * from "@chakra-ui/styled-system"
-export { keyframes, CacheProvider, ThemeContext, Global } from "@emotion/core"
+export {
+  keyframes,
+  CacheProvider,
+  ThemeContext,
+  Global,
+  jsx,
+} from "@emotion/core"
 export type { InterpolationWithTheme, ObjectInterpolation } from "@emotion/core"
 export * from "./hooks"
-export * from "./jsx"
 export * from "./system.types"
 export * from "./providers"
-export { forwardRef, omitThemingProps } from "./system.utils"
+export { omitThemingProps } from "./system.utils"
 export * from "./system"
-export * from "./style-config"
+export * from "./forward-ref"
+export * from "./use-style-config"

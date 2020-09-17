@@ -127,6 +127,7 @@ export function useMenu(props: UseMenuProps) {
     ref: menuRef,
     onInteractOutside: (event) => {
       if (
+        isOpen &&
         closeOnBlur &&
         !buttonRef.current?.contains(event.target as HTMLElement)
       ) {
@@ -206,10 +207,17 @@ export interface UseMenuReturn extends ReturnType<typeof useMenu> {}
  * is passed as `context` to this hook.
  */
 
-export interface UseMenuListProps extends HTMLAttributes<Element> {}
+export interface UseMenuListProps
+  extends Omit<HTMLAttributes<Element>, "color"> {}
 
 export function useMenuList(props: UseMenuListProps) {
   const menu = useMenuContext()
+
+  if (!menu) {
+    throw new Error(
+      `useMenuContext: context is undefined. Seems you forgot the component within <Menu>`,
+    )
+  }
 
   const {
     focusedIndex,
@@ -265,7 +273,7 @@ export function useMenuList(props: UseMenuListProps) {
 
   return {
     ...props,
-    children: isLazy ? (isOpen ? props.children : null) : props.children,
+    children: !isLazy || isOpen ? props.children : null,
     className: cx("chakra-menu__menu-list", props.className),
     ref: mergeRefs(menuRef, popper.ref),
     tabIndex: -1,
@@ -274,7 +282,7 @@ export function useMenuList(props: UseMenuListProps) {
     hidden: !isOpen,
     "aria-orientation": "vertical" as React.AriaAttributes["aria-orientation"],
     "data-placement": placement,
-    style: { ...props.style, ...popper.style },
+    style: { ...popper.style, ...props.style },
     onKeyDown: callAllHandlers(props.onKeyDown, onKeyDown),
   }
 }
@@ -287,7 +295,8 @@ export function useMenuList(props: UseMenuListProps) {
  * is passed as `context` to this hook.
  */
 
-export interface UseMenuButtonProps extends HTMLAttributes<Element> {}
+export interface UseMenuButtonProps
+  extends Omit<HTMLAttributes<Element>, "color"> {}
 
 export function useMenuButton(props: UseMenuButtonProps) {
   const menu = useMenuContext()
@@ -351,7 +360,8 @@ export function useMenuButton(props: UseMenuButtonProps) {
   }
 }
 
-export interface UseMenuItemProps extends HTMLAttributes<Element> {
+export interface UseMenuItemProps
+  extends Omit<HTMLAttributes<Element>, "color"> {
   isDisabled?: boolean
   isFocusable?: boolean
 }
@@ -454,12 +464,16 @@ export function useMenuItem(props: UseMenuItemProps) {
   }
 }
 
-export interface UseMenuOptionProps extends UseMenuItemProps {
+export interface UseMenuOptionOptions {
   value?: string
   isChecked?: boolean
   type?: "radio" | "checkbox"
   children?: React.ReactNode
 }
+
+export interface UseMenuOptionProps
+  extends UseMenuItemProps,
+    UseMenuOptionOptions {}
 
 export function useMenuOption(props: UseMenuOptionProps) {
   const {
@@ -536,6 +550,15 @@ export function useMenuOptionGroup(props: UseMenuOptionGroupProps) {
   const validChildren = getValidChildren(children)
 
   const clones = validChildren.map((child) => {
+    /**
+     * We've added an internal `id` to each `MenuItemOption`,
+     * let's use that for type-checking.
+     *
+     * We can't rely on displayName or the element's type since
+     * they can be changed by the user.
+     */
+    if ((child.type as any).id !== "MenuItemOption") return child
+
     const onClick = (event: MouseEvent) => {
       handleChange(child.props.value)
       child.props.onClick?.(event)

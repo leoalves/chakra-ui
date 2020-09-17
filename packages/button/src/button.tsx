@@ -2,14 +2,14 @@ import { Spinner } from "@chakra-ui/spinner"
 import {
   chakra,
   forwardRef,
-  omitThemingProps,
   PropsOf,
+  omitThemingProps,
   SystemProps,
   ThemingProps,
   useStyleConfig,
 } from "@chakra-ui/system"
 import { cx, dataAttr, merge, __DEV__ } from "@chakra-ui/utils"
-import React, { ReactElement, isValidElement, cloneElement } from "react"
+import * as React from "react"
 import { useButtonGroup } from "./button-group"
 
 export interface ButtonOptions {
@@ -41,11 +41,11 @@ export interface ButtonOptions {
   /**
    * If added, the button will show an icon before the button's label.
    */
-  leftIcon?: ReactElement
+  leftIcon?: React.ReactElement
   /**
    * If added, the button will show an icon after the button's label.
    */
-  rightIcon?: ReactElement
+  rightIcon?: React.ReactElement
   /**
    * The space between the button icon and label.
    */
@@ -53,14 +53,18 @@ export interface ButtonOptions {
   /**
    * Replace the spinner component when `isLoading` is set to `true`
    */
-  spinner?: ReactElement
+  spinner?: React.ReactElement
 }
 
-export type ButtonProps = PropsOf<typeof chakra.button> &
-  ButtonOptions &
-  ThemingProps
+export interface ButtonProps
+  extends PropsOf<typeof chakra.button>,
+    ButtonOptions,
+    ThemingProps {}
 
-export const Button = forwardRef<ButtonProps>(function Button(props, ref) {
+export const Button = forwardRef<ButtonProps, "button">(function Button(
+  props,
+  ref,
+) {
   const group = useButtonGroup()
   const styles = useStyleConfig("Button", { ...group, ...props })
 
@@ -142,11 +146,11 @@ if (__DEV__) {
   Button.displayName = "Button"
 }
 
-function ButtonIcon(props: PropsOf<typeof chakra.span>) {
+const ButtonIcon: React.FC<PropsOf<typeof chakra.span>> = (props) => {
   const { children, className, ...rest } = props
 
-  const _children = isValidElement(children)
-    ? cloneElement(children, {
+  const _children = React.isValidElement(children)
+    ? React.cloneElement(children, {
         "aria-hidden": true,
         focusable: false,
       })
@@ -161,12 +165,12 @@ if (__DEV__) {
   ButtonIcon.displayName = "ButtonIcon"
 }
 
-type ButtonSpinnerProps = PropsOf<typeof chakra.div> & {
+interface ButtonSpinnerProps extends PropsOf<typeof chakra.div> {
   label?: string
   spacing?: SystemProps["margin"]
 }
 
-function ButtonSpinner(props: ButtonSpinnerProps) {
+const ButtonSpinner: React.FC<ButtonSpinnerProps> = (props) => {
   const {
     label,
     spacing,

@@ -1,107 +1,76 @@
-import { act, axe, fireEvent, render, screen } from "@chakra-ui/test-utils"
+import {
+  act,
+  testA11y,
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@chakra-ui/test-utils"
 import * as React from "react"
+import { TooltipProps } from "../dist/types"
 import { Tooltip } from "../src"
 
-beforeAll(() => {
-  jest.useFakeTimers()
-})
+const buttonLabel = "Hover me"
+const tooltipLabel = "tooltip label"
 
-afterAll(() => {
-  jest.useRealTimers()
-})
+const DummyComponent = (props: Omit<TooltipProps, "children">) => (
+  <Tooltip label={tooltipLabel} {...props}>
+    <button>{buttonLabel}</button>
+  </Tooltip>
+)
 
-test("should render without errors", () => {
-  const { asFragment } = render(
-    <Tooltip label="tooltip label">
-      <button>Hover me</button>
-    </Tooltip>,
-  )
+test("passes a11y test when hovered", async () => {
+  render(<DummyComponent />)
 
-  expect(asFragment()).toMatchSnapshot()
-})
+  fireEvent.mouseOver(screen.getByText(buttonLabel))
 
-test("should have no violations", async () => {
-  const buttonLabel = "Hover me"
+  const tooltip = await screen.findByRole("tooltip")
 
-  render(
-    <Tooltip label="tooltip label">
-      <button>Hover me</button>
-    </Tooltip>,
-  )
-
-  act(() => {
-    fireEvent.mouseOver(screen.getByText(buttonLabel))
-    jest.advanceTimersByTime(200)
-  })
-
-  const tooltip = screen.queryByRole("tooltip") as HTMLElement
-
-  axe(tooltip).then((res) => {
-    expect(res).toHaveNoViolations()
-  })
+  await testA11y(tooltip)
 })
 
 test("shows on mouseover and closes on mouseout", async () => {
-  const buttonLabel = "Hover me"
-  const tooltipLabel = "tooltip label"
-
-  const tools = render(
-    <Tooltip label="tooltip label">
-      <button>Hover me</button>
-    </Tooltip>,
-  )
+  render(<DummyComponent />)
 
   act(() => {
     fireEvent.mouseOver(screen.getByText(buttonLabel))
-    jest.advanceTimersByTime(200)
   })
 
-  expect(tools.asFragment()).toMatchSnapshot()
+  await screen.findByRole("tooltip")
+
   expect(screen.getByText(buttonLabel)).toBeInTheDocument()
   expect(screen.getByRole("tooltip")).toBeInTheDocument()
 
   act(() => {
     fireEvent.mouseOut(screen.getByText(buttonLabel))
-    jest.advanceTimersByTime(200)
   })
 
-  expect(screen.queryByText(tooltipLabel)).toBeNull()
+  await waitForElementToBeRemoved(() => screen.getByText(tooltipLabel))
 })
 
 test("should not show on mouseover if isDisabled is true", async () => {
-  const buttonLabel = "Hover me"
-  const tooltipLabel = "tooltip label"
+  jest.useFakeTimers()
 
-  render(
-    <Tooltip label="tooltip label" isDisabled={true}>
-      <button>Hover me</button>
-    </Tooltip>,
-  )
+  render(<DummyComponent isDisabled />)
 
   act(() => {
     fireEvent.mouseOver(screen.getByText(buttonLabel))
     jest.advanceTimersByTime(200)
   })
 
-  expect(screen.queryByText(tooltipLabel)).toBeNull()
+  expect(screen.queryByText(tooltipLabel)).not.toBeInTheDocument()
+
+  jest.useRealTimers()
 })
 
 test("should show on mouseover if isDisabled has a falsy value", async () => {
-  const buttonLabel = "Hover me"
-
-  const disabledState = false
-  const tools = render(
-    <Tooltip label="tooltip label" isDisabled={disabledState}>
-      <button>Hover me</button>
-    </Tooltip>,
-  )
+  render(<DummyComponent isDisabled={false} />)
 
   act(() => {
     fireEvent.mouseOver(screen.getByText(buttonLabel))
-    jest.advanceTimersByTime(200)
   })
 
-  expect(tools.asFragment()).toMatchSnapshot()
+  await screen.findByRole("tooltip")
+
   expect(screen.getByText(buttonLabel)).toBeInTheDocument()
-  expect(screen.getByRole("tooltip")).toBeInTheDocument()
 })

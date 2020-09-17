@@ -22,7 +22,6 @@ import {
   ReactNode,
   ReactElement,
   KeyboardEventHandler,
-  FocusEventHandler,
   ButtonHTMLAttributes,
   Ref,
   CSSProperties,
@@ -57,6 +56,12 @@ export interface UseTabsProps {
    * The id of the tab
    */
   id?: string
+  /**
+   * Performance 🚀:
+   * If `true`, the TabPanel rendering will be deferred
+   * until it is open.
+   */
+  isLazy?: boolean
 }
 
 /**
@@ -74,6 +79,7 @@ export function useTabs(props: UseTabsProps) {
     onChange,
     index,
     isManual,
+    isLazy,
     orientation = "horizontal",
     ...htmlProps
   } = props
@@ -157,6 +163,7 @@ export function useTabs(props: UseTabsProps) {
     setSelectedIndex,
     setFocusedIndex,
     isManual,
+    isLazy,
     orientation,
     enabledDomContext,
     domContext,
@@ -248,13 +255,19 @@ export function useTabList<P extends UseTabListProps>(props: P) {
 
 export type UseTabListReturn = ReturnType<typeof useTabList>
 
-export interface UseTabProps extends Omit<UseClickableProps, "ref"> {
+export interface UseTabOptions {
   id?: string
   isSelected?: boolean
   panelId?: string
-  onFocus?: FocusEventHandler
-  ref?: Ref<any>
+  /**
+   * If `true`, the `Tab` won't be toggleable
+   */
+  isDisabled?: boolean
 }
+
+export interface UseTabProps
+  extends Omit<UseClickableProps, "color">,
+    UseTabOptions {}
 
 /**
  * Tabs hook to manage each tab button.
@@ -334,7 +347,7 @@ export function useTab<P extends UseTabProps>(
     type,
     "aria-selected": isSelected ? true : undefined,
     "aria-controls": makeTabPanelId(id, index),
-    onFocus: callAllHandlers(props.onFocus, onFocus),
+    onFocus: isDisabled ? undefined : callAllHandlers(props.onFocus, onFocus),
   }
 }
 
@@ -376,8 +389,11 @@ export function useTabPanels<P extends UseTabPanelsProps>(props: P) {
  */
 export function useTabPanel(props: Dict) {
   const { isSelected, id, ...htmlProps } = props
+  const { isLazy } = useTabsContext()
+
   return {
     ...htmlProps,
+    children: !isLazy || isSelected ? props.children : null,
     role: "tabpanel",
     hidden: !isSelected,
     id,

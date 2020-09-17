@@ -38,8 +38,8 @@ cd chakra-ui
 ```
 
 3. Setup all dependencies and build. Chakra UI uses `yarn` and `lerna`, so run
-   `yarn bootstrap`. This command will install dependencies, bootstrap the repo
-   using `lerna` and build all packages.
+   `yarn prestart`. This command will install dependencies, and then bootstrap
+   the repo using `lerna` to build all packages.
 
 > If you run into any issues during this step, kindly reach out to the Chakra UI
 > React team here: https://discord.gg/dQHfcWF
@@ -67,28 +67,28 @@ use consumed independently.
 cross-component development and builds all components.
 
 **`yarn bootstrap`**: bootstraps the entire project and symlinks all
-dependencies for cross-component development
+dependencies for cross-component development.
 
 **`yarn storybook`**: starts storybook server and loads stories in files that
-ends with `.stories.tsx`
+end with `.stories.tsx`.
 
-**`yarn docs:start`**: run the documentation site locally
+**`yarn docs:start`**: run the documentation site locally.
 
-**`yarn build`**: run build for all component packages
+**`yarn build`**: run build for all component packages.
 
-**`yarn test`**: run test for all component packages
+**`yarn test`**: run test for all component packages.
 
-**`yarn release`**: publish changed packages
+**`yarn release`**: publish changed packages.
 
 **`yarn [package] <cmd>`**: Run a command on the specific package you're working
-on. You can run `build`, `test`, `lint` commands
+on. You can run `build`, `test`, `lint` commands.
 
 #### Package Aliasing and Yarn Workspace
 
 Since we're using lerna monorepo + yarn workspaces by default, this enables us
-to run commands within component package directly from the root.
+to run commands within component packages directly from the root.
 
-Each component is named this way `@chakra-ui/[component]`. Let's say we want to
+Each component is named this way: `@chakra-ui/[component]`. Let's say we want to
 build the checkbox component. Here's how to do it:
 
 ```bash
@@ -100,7 +100,7 @@ lerna run build --scope @chakra-ui/button
 ```
 
 **Shortcut:** To make this shorter and more convenient, we've added an alias for
-each component in the root `package.json`. Now you can simple do:
+each component in the root `package.json`. Now you can simply do:
 
 ```bash
 # to build
@@ -120,7 +120,8 @@ and want to avoid running the command for all components.
 ### Documentation
 
 The documentation site is built with Gatsby. If you'd like to contribute to the
-docs, simply run `yarn docs:start`.
+docs, simply run `yarn build`, then `yarn docs:build`, and then
+`yarn docs:start`.
 
 ### Storybook
 
@@ -129,7 +130,8 @@ Build components in isolation with Storybook using `yarn storybook`.
 ## Think you found a bug?
 
 Please conform to the issue template and provide a clear path to reproduction
-with a code example. The best way to show a bug is by sending a CodeSandbox link
+with a code example. The best way to show a bug is by sending a CodeSandbox
+link.
 
 You may wish to use our starters to help you get going:
 
@@ -139,7 +141,7 @@ You may wish to use our starters to help you get going:
 ## Proposing new or changed API?
 
 Please provide thoughtful comments and some sample API code. Proposals that
-don't line up with our roadmap or doesn't have a thoughtful explanation will be
+don't line up with our roadmap or don't have a thoughtful explanation will be
 closed.
 
 ## Making a Pull Request?
@@ -158,8 +160,8 @@ the following categories:
 
 - `feat / feature`: all changes that introduce completely new code or new
   features
-- `fix`: changes that fix a bug (ideally you will addtionally reference an issue
-  if present)
+- `fix`: changes that fix a bug (ideally you will additionally reference an
+  issue if present)
 - `refactor`: any code related change that is not a fix nor a feature
 - `docs`: changing existing or creating new documentation (i.e. README, docs for
   usage of a lib or cli usage)
@@ -167,7 +169,7 @@ the following categories:
   dependencies or the addition of new dependencies
 - `test`: all changes regarding tests (adding new tests or changing existing
   ones)
-- `ci`: all changes regarding the configuration of continous integration (i.e.
+- `ci`: all changes regarding the configuration of continuous integration (i.e.
   github actions, ci system)
 - `chore`: all changes to the repository that do not fit into any of the above
   categories
@@ -199,7 +201,23 @@ https://discord.gg/dQHfcWF. We would love to support you anyway we can.
 
 ## Want to help improve the docs?
 
-TODO
+By default, the GitHub REST API has an anonymous user rate limit. This can be
+hit during heavy local docs development if the server is frequently restarted.
+
+Creating a GitHub token and storing it as the `GITHUB_TOKEN` environment
+variable allows the user to avoid the limit.
+
+Visit
+https://github.com/settings/tokens/new?description=Chakra+website+development to
+create a new personal access token. Once it's created, be sure to copy the token
+string.
+
+You'll then run the following command in the terminal that you'll start the docs
+from:
+
+```sh
+export GITHUB_TOKEN=<PASTE YOUR TOKEN HERE>
+```
 
 ## License
 

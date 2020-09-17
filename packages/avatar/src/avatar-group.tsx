@@ -5,9 +5,15 @@ import {
   ThemingProps,
   useMultiStyleConfig,
   omitThemingProps,
+  forwardRef,
 } from "@chakra-ui/system"
-import { getValidChildren, __DEV__, cx } from "@chakra-ui/utils"
-import React, { Ref, ReactNode, forwardRef, cloneElement } from "react"
+import {
+  getValidChildren,
+  __DEV__,
+  cx,
+  filterUndefined,
+} from "@chakra-ui/utils"
+import * as React from "react"
 import { baseStyle } from "./avatar"
 
 interface AvatarGroupOptions {
@@ -16,7 +22,7 @@ interface AvatarGroupOptions {
    *
    * Ideally should be `Avatar` and `MoreIndicator` components
    */
-  children: ReactNode
+  children: React.ReactNode
   /**
    * The space between the avatars in the group.
    */
@@ -27,89 +33,92 @@ interface AvatarGroupOptions {
   max?: number
 }
 
-export type AvatarGroupProps = AvatarGroupOptions &
-  PropsOf<typeof chakra.div> &
-  ThemingProps
+export interface AvatarGroupProps
+  extends AvatarGroupOptions,
+    Omit<PropsOf<typeof chakra.div>, "children">,
+    ThemingProps {}
 
 /**
  * AvatarGroup displays a number of avatars grouped together in a stack.
  */
-export const AvatarGroup = forwardRef(function AvatarGroup(
-  props: AvatarGroupProps,
-  ref: Ref<any>,
-) {
-  const styles = useMultiStyleConfig("Avatar", props)
+export const AvatarGroup = forwardRef<AvatarGroupProps, "div">(
+  function AvatarGroup(props, ref) {
+    const styles = useMultiStyleConfig("Avatar", props)
 
-  const {
-    children,
-    borderColor,
-    max,
-    spacing = "-0.75rem",
-    ...rest
-  } = omitThemingProps(props)
+    const {
+      children,
+      borderColor,
+      max,
+      spacing = "-0.75rem",
+      borderRadius = "full",
+      ...rest
+    } = omitThemingProps(props)
 
-  const validChildren = getValidChildren(children)
+    const validChildren = getValidChildren(children)
 
-  /**
-   * get the avatars within the max
-   */
-  const childrenWithinMax = max ? validChildren.slice(0, max) : validChildren
+    /**
+     * get the avatars within the max
+     */
+    const childrenWithinMax = max ? validChildren.slice(0, max) : validChildren
 
-  /**
-   * get the remaining avatar count
-   */
-  const excess = max != null && validChildren.length - max
+    /**
+     * get the remaining avatar count
+     */
+    const excess = max != null && validChildren.length - max
 
-  /**
-   * Reversing the children is a great way to avoid using zIndex
-   * to overlap the avatars
-   */
-  const reversedChildren = childrenWithinMax.reverse()
+    /**
+     * Reversing the children is a great way to avoid using zIndex
+     * to overlap the avatars
+     */
+    const reversedChildren = childrenWithinMax.reverse()
 
-  const clones = reversedChildren.map((child, index) => {
-    const isFirstAvatar = index === 0
+    const clones = reversedChildren.map((child, index) => {
+      const isFirstAvatar = index === 0
 
-    return cloneElement(child, {
-      mr: isFirstAvatar ? 0 : spacing,
-      size: props.size,
-      borderColor: child.props.borderColor || borderColor,
-      showBorder: true,
+      const childProps = {
+        mr: isFirstAvatar ? 0 : spacing,
+        size: props.size,
+        borderColor: child.props.borderColor || borderColor,
+        showBorder: true,
+      }
+
+      return React.cloneElement(child, filterUndefined(childProps))
     })
-  })
 
-  const groupStyles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    flexDirection: "row-reverse",
-  }
+    const groupStyles = {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      flexDirection: "row-reverse",
+    }
 
-  const excessStyles = {
-    borderRadius: "full",
-    ml: spacing,
-    ...baseStyle,
-    ...styles.excessLabel,
-  }
+    const excessStyles = {
+      borderRadius,
+      ml: spacing,
+      ...baseStyle,
+      ...styles.excessLabel,
+    }
 
-  return (
-    <chakra.div
-      ref={ref}
-      role="group"
-      __css={groupStyles}
-      {...rest}
-      className={cx("chakra-avatar__group", props.className)}
-    >
-      {excess && (
-        <chakra.span
-          className="chakra-avatar__excess"
-          __css={excessStyles}
-          children={`+${excess}`}
-        />
-      )}
-      {clones}
-    </chakra.div>
-  )
-})
+    return (
+      <chakra.div
+        ref={ref}
+        role="group"
+        __css={groupStyles}
+        {...rest}
+        className={cx("chakra-avatar__group", props.className)}
+      >
+        {excess > 0 && (
+          <chakra.span
+            className="chakra-avatar__excess"
+            __css={excessStyles}
+            children={`+${excess}`}
+          />
+        )}
+        {clones}
+      </chakra.div>
+    )
+  },
+)
 
 if (__DEV__) {
   AvatarGroup.displayName = "AvatarGroup"

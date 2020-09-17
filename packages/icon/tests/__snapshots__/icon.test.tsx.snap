@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Icon renders a third-party icon correctly 1`] = `
+exports[`renders a third-party icon correctly 1`] = `
 <DocumentFragment>
   .emotion-0 {
+  width: 1em;
+  height: 1em;
   display: inline-block;
   line-height: 1em;
-  color: currentColor;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
-  width: 1em;
-  height: 1em;
+  color: currentColor;
 }
 
 <svg
@@ -31,18 +31,18 @@ exports[`Icon renders a third-party icon correctly 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Icon renders correctly 1`] = `
+exports[`renders correctly 1`] = `
 <DocumentFragment>
   .emotion-0 {
-  vertical-align: middle;
+  width: 1em;
+  height: 1em;
   display: inline-block;
   line-height: 1em;
-  color: currentColor;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
-  width: 1em;
-  height: 1em;
+  color: currentColor;
+  vertical-align: middle;
 }
 
 <svg

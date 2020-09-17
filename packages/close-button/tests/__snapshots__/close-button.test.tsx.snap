@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CloseButton renders correctly 1`] = `
+exports[`matches snapshot 1`] = `
 <DocumentFragment>
   .emotion-1 {
   outline: 0;
@@ -57,15 +57,15 @@ exports[`CloseButton renders correctly 1`] = `
 }
 
 .emotion-0 {
-  vertical-align: middle;
+  width: 1em;
+  height: 1em;
   display: inline-block;
   line-height: 1em;
-  color: currentColor;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
-  width: 1em;
-  height: 1em;
+  color: currentColor;
+  vertical-align: middle;
 }
 
 <button

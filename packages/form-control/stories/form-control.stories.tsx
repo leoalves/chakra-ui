@@ -1,9 +1,4 @@
-import {
-  chakra,
-  PropsOf,
-  useStyleConfig,
-  useMultiStyleConfig,
-} from "@chakra-ui/system"
+import { chakra, PropsOf, useMultiStyleConfig } from "@chakra-ui/system"
 import * as React from "react"
 import {
   FormControlOptions,
@@ -38,8 +33,8 @@ type InputProps = Omit<PropsOf<"input">, OmittedTypes> &
 // Create an input that consumes useFormControl
 type Props = { focusBorderColor?: string; errorBorderColor?: string }
 
-const Input = React.forwardRef(
-  (props: InputProps, ref: React.Ref<HTMLInputElement>) => {
+const Input = React.forwardRef<HTMLInputElement, InputProps & Props>(
+  (props, ref) => {
     const styles = useMultiStyleConfig("Input", props)
     const inputProps = useFormControl<HTMLInputElement>(props)
     return <chakra.input ref={ref} __css={styles.field} {...inputProps} />
@@ -60,13 +55,13 @@ type TextAreaProps = Omit<PropsOf<"textarea">, OmittedTypes> &
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (props, ref) => {
-    const styles = useStyleConfig("Textarea", props)
+    const styles = useMultiStyleConfig("Textarea", props)
     const inputProps = useFormControl<HTMLTextAreaElement>(props)
     return <chakra.textarea ref={ref} __css={styles} {...inputProps} />
   },
 )
 
-export const TextAreaExample = () => (
+export const TextAreaExample: React.FC = () => (
   <FormControl id="first-name" isInvalid>
     <FormLabel>First name</FormLabel>
     <Textarea placeholder="First Name" />
@@ -88,7 +83,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   },
 )
 
-export const SelectExample = () => (
+export const SelectExample: React.FC = () => (
   <FormControl id="first-name" isInvalid>
     <FormLabel>First name</FormLabel>
     <Select>
@@ -108,7 +103,7 @@ export const SelectExample = () => (
  * You can style the label when the input is focused,
  * simply pass the `_focus` pseudo prop
  */
-export const StylingFocus = () => (
+export const StylingFocus: React.FC = () => (
   <FormControl id="first-name">
     <FormLabel _focus={{ color: "blue.600" }}>First name</FormLabel>
     <Input placeholder="First Name" width="100%" />
