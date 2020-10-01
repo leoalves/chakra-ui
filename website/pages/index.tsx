@@ -38,6 +38,7 @@ import { FaArrowRight, FaDiscord, FaMicrophone } from "react-icons/fa"
 import { FiDownload, FiGithub, FiUsers } from "react-icons/fi"
 import { IoMdMoon } from "react-icons/io"
 import { MdAccessibility, MdGrain, MdPalette } from "react-icons/md"
+import type { Member, Sponsor } from "src/types/github"
 
 const Feature = ({ title, icon, children, ...props }) => {
   return (
@@ -100,7 +101,15 @@ const StatBox = (props: StatBoxProps) => {
   )
 }
 
-const HomePage = ({ members, sponsors }) => {
+interface HomePageProps {
+  members: Member[]
+  sponsors: {
+    companies: Sponsor[]
+    individuals: Sponsor[]
+  }
+}
+
+const HomePage = ({ members, sponsors }: HomePageProps) => {
   return (
     <>
       <SEO

@@ -3,7 +3,11 @@ import { Placement, usePopper, UsePopperProps } from "@chakra-ui/popper"
 import { callAllHandlers, mergeRefs, PropGetter } from "@chakra-ui/utils"
 import { useCallback, useEffect, useRef } from "react"
 
-export interface UseTooltipProps {
+export interface UseTooltipProps
+  extends Pick<
+    UsePopperProps,
+    "arrowSize" | "modifiers" | "gutter" | "offset"
+  > {
   /**
    * Delay (in ms) before showing the tooltip
    * @default 0ms
@@ -47,18 +51,6 @@ export interface UseTooltipProps {
    * If `true`, the tooltip will be initially shown
    */
   defaultIsOpen?: boolean
-  /**
-   * The size of the arrow in css units (numeric)
-   * @default 10 ( = 10px )
-   */
-  arrowSize?: UsePopperProps["arrowSize"]
-  /**
-   * The Popper.js modifiers to use
-   */
-  modifiers?: UsePopperProps["modifiers"]
-  /**
-   * If `true`, the tooltip will not be shown on any trigger
-   */
   isDisabled?: boolean
 }
 
@@ -77,6 +69,8 @@ export function useTooltip(props: UseTooltipProps = {}) {
     arrowSize = 10,
     modifiers,
     isDisabled,
+    gutter,
+    offset,
     ...htmlProps
   } = props
 
@@ -92,6 +86,8 @@ export function useTooltip(props: UseTooltipProps = {}) {
     placement,
     arrowSize,
     modifiers,
+    gutter,
+    offset,
   })
 
   const tooltipId = useId(id, "tooltip")

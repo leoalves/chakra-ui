@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one"
 import type { Omit, Dict } from "./types"
 export { default as merge } from "lodash.merge"
 export { default as mergeWith } from "lodash.mergewith"
@@ -59,6 +60,9 @@ export function get(
   return obj === undefined ? fallback : obj
 }
 
+// Just a memoized version of `get`
+export const memoizedGet = memoizeOne(get)
+
 /**
  * Get value from deeply nested object, based on path
  * It returns the path value if not found in object
@@ -98,3 +102,12 @@ export const filterUndefined = (object: Dict) =>
 
 export const objectKeys = <T extends Dict>(obj: T) =>
   (Object.keys(obj) as unknown) as (keyof T)[]
+
+/**
+ * Object.entries polyfill for Nodev10 compatibility
+ */
+export const fromEntries = <T extends unknown>(entries: [string, any][]) =>
+  entries.reduce((carry, [key, value]) => {
+    carry[key] = value
+    return carry
+  }, {}) as T

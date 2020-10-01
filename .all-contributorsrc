@@ -441,7 +441,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/33039909?v=4",
       "profile": "https://github.com/sebqq",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -1237,6 +1238,42 @@
       "name": "Juliano Farias",
       "avatar_url": "https://avatars1.githubusercontent.com/u/1124448?v=4",
       "profile": "http://frontendwizard.dev",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "joe-bell",
+      "name": "Joe Bell",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7349341?v=4",
+      "profile": "https://joebell.co.uk",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "hpohlmeyer",
+      "name": "Henning Pohlmeyer",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/6564077?v=4",
+      "profile": "https://henningpohlmeyer.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sivertschou",
+      "name": "Sivert Schou Olsen",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/31168035?v=4",
+      "profile": "https://github.com/sivertschou",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "lazandrei19",
+      "name": "Andrei Lazarescu",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3816519?v=4",
+      "profile": "https://github.com/lazandrei19",
       "contributions": [
         "doc"
       ]

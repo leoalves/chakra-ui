@@ -18,6 +18,7 @@ import fs from "fs"
 import path from "path"
 import * as React from "react"
 import { IoIosGlobe, IoLogoGithub, IoLogoTwitter } from "react-icons/io"
+import { Contributor, Member as IMember } from "src/types/github"
 
 const SocialLink = ({ icon, href }) => (
   <Link
@@ -38,7 +39,7 @@ const SocialLink = ({ icon, href }) => (
   </Link>
 )
 
-function Member({ member }) {
+function Member({ member }: { member: IMember }) {
   const {
     avatar_url: avatarUrl,
     bio,
@@ -74,7 +75,12 @@ function Member({ member }) {
   )
 }
 
-function Team({ members, contributors }) {
+interface TeamProps {
+  members: IMember[]
+  contributors: Contributor[]
+}
+
+function Team({ members, contributors }: TeamProps) {
   const memberLogins = members.map(({ login }) => login)
   const contributorsWithoutTeam = contributors.filter(
     ({ login }) => !memberLogins.includes(login),
