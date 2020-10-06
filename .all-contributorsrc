@@ -314,7 +314,8 @@
       "profile": "https://trevorblades.com",
       "contributions": [
         "code",
-        "doc"
+        "doc",
+        "bug"
       ]
     },
     {
@@ -1274,6 +1275,61 @@
       "name": "Andrei Lazarescu",
       "avatar_url": "https://avatars1.githubusercontent.com/u/3816519?v=4",
       "profile": "https://github.com/lazandrei19",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "jrrmt",
+      "name": "José Teixeira",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/44125?v=4",
+      "profile": "https://github.com/jrrmt",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "adrianoresende",
+      "name": "Adriano Resende",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/798755?v=4",
+      "profile": "http://www.adrianoresende.com.br",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "victorwpbastos",
+      "name": "Victor Bastos",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1017515?v=4",
+      "profile": "http://victorwpbastos.github.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Zaynex",
+      "name": "Vincent",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/13745971?v=4",
+      "profile": "https://github.com/Zaynex",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "candicecz",
+      "name": "Candice",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/25373313?v=4",
+      "profile": "http://www.candiceczech.com",
+      "contributions": [
+        "design",
+        "bug"
+      ]
+    },
+    {
+      "login": "baumandm",
+      "name": "Dave Bauman",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3084806?v=4",
+      "profile": "http://davebauman.io",
       "contributions": [
         "doc"
       ]
